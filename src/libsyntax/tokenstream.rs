@@ -162,6 +162,12 @@ impl From<TokenTree> for TokenStream {
     }
 }
 
+impl From<Token> for TokenStream {
+    fn from(token: Token) -> TokenStream {
+        TokenTree::Token(DUMMY_SP, token).into()
+    }
+}
+
 impl<T: Into<TokenStream>> iter::FromIterator<T> for TokenStream {
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
         TokenStream::concat(iter.into_iter().map(Into::into).collect::<Vec<_>>())
@@ -360,7 +366,7 @@ impl PartialEq<ThinTokenStream> for ThinTokenStream {
 
 impl fmt::Display for TokenStream {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str(&pprust::tts_to_string(&self.trees().collect::<Vec<_>>()))
+        f.write_str(&pprust::tokens_to_string(self.clone()))
     }
 }
 
